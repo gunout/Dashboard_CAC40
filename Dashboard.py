@@ -9,6 +9,8 @@ from datetime import datetime, timedelta
 import time
 import random
 import warnings
+import yfinance as yf
+
 warnings.filterwarnings('ignore')
 
 # Configuration de la page
@@ -95,194 +97,214 @@ class CAC40Dashboard:
         self.sector_data = self.initialize_sector_data()
         
     def define_entreprises(self):
-        """Définit les entreprises du CAC 40 avec leurs caractéristiques"""
+        """Définit les entreprises du CAC 40 avec leurs tickers Yahoo Finance"""
         return {
-            'LVMH': {
+            'MC.PA': {
                 'nom_complet': 'LVMH Moët Hennessy Louis Vuitton',
                 'secteur': 'Luxe',
                 'sous_secteur': 'Articles de luxe',
                 'pays': 'France',
                 'couleur': '#8B4513',
                 'poids_cac40': 12.5,
-                'market_cap': 380e9,
-                'dividende_yield': 1.5,
-                'volume_moyen': 450000,
                 'description': 'Leader mondial du luxe'
             },
-            'TOT': {
+            'TTE.PA': {
                 'nom_complet': 'TotalEnergies',
                 'secteur': 'Énergie',
                 'sous_secteur': 'Pétrole & Gaz',
                 'pays': 'France',
                 'couleur': '#FF6B00',
                 'poids_cac40': 8.2,
-                'market_cap': 150e9,
-                'dividende_yield': 4.8,
-                'volume_moyen': 3500000,
                 'description': 'Major énergétique intégré'
             },
-            'SAN': {
+            'SAN.PA': {
                 'nom_complet': 'Sanofi',
                 'secteur': 'Santé',
                 'sous_secteur': 'Pharmaceutique',
                 'pays': 'France',
                 'couleur': '#0066CC',
                 'poids_cac40': 7.8,
-                'market_cap': 140e9,
-                'dividende_yield': 3.2,
-                'volume_moyen': 1200000,
                 'description': 'Groupe pharmaceutique mondial'
             },
-            'AIR': {
+            'AIR.PA': {
                 'nom_complet': 'Airbus',
                 'secteur': 'Industrie',
                 'sous_secteur': 'Aérospatial',
                 'pays': 'France',
                 'couleur': '#003366',
                 'poids_cac40': 6.5,
-                'market_cap': 110e9,
-                'dividende_yield': 1.1,
-                'volume_moyen': 800000,
                 'description': 'Constructeur aéronautique'
             },
-            'OR': {
+            'OR.PA': {
                 'nom_complet': "L'Oréal",
                 'secteur': 'Consommation',
                 'sous_secteur': 'Cosmétiques',
                 'pays': 'France',
                 'couleur': '#FF69B4',
                 'poids_cac40': 5.9,
-                'market_cap': 240e9,
-                'dividende_yield': 1.3,
-                'volume_moyen': 300000,
                 'description': 'Leader mondial des cosmétiques'
             },
-            'BNP': {
+            'BNP.PA': {
                 'nom_complet': 'BNP Paribas',
                 'secteur': 'Finance',
                 'sous_secteur': 'Banque',
                 'pays': 'France',
                 'couleur': '#004B87',
                 'poids_cac40': 5.2,
-                'market_cap': 75e9,
-                'dividende_yield': 6.2,
-                'volume_moyen': 2500000,
                 'description': 'Groupe bancaire international'
             },
-            'AI': {
+            'AI.PA': {
                 'nom_complet': 'Air Liquide',
                 'secteur': 'Chimie',
                 'sous_secteur': 'Gaz industriels',
                 'pays': 'France',
                 'couleur': '#00A3E0',
                 'poids_cac40': 4.8,
-                'market_cap': 85e9,
-                'dividende_yield': 2.1,
-                'volume_moyen': 600000,
                 'description': 'Leader des gaz industriels'
             },
-            'STM': {
+            'STM.PA': {
                 'nom_complet': 'STMicroelectronics',
                 'secteur': 'Technologie',
                 'sous_secteur': 'Semi-conducteurs',
                 'pays': 'France',
                 'couleur': '#660099',
                 'poids_cac40': 4.3,
-                'market_cap': 40e9,
-                'dividende_yield': 0.8,
-                'volume_moyen': 1500000,
                 'description': 'Fabricant de semi-conducteurs'
             },
-            'DG': {
+            'DG.PA': {
                 'nom_complet': 'Vinci',
                 'secteur': 'Industrie',
                 'sous_secteur': 'BTP & Concessions',
                 'pays': 'France',
                 'couleur': '#FFCC00',
                 'poids_cac40': 4.1,
-                'market_cap': 60e9,
-                'dividende_yield': 3.5,
-                'volume_moyen': 700000,
                 'description': 'Groupe de construction et concessions'
             },
-            'MC': {
-                'nom_complet': 'LVMH',
-                'secteur': 'Luxe',
-                'sous_secteur': 'Articles de luxe',
+            'RI.PA': {
+                'nom_complet': 'Pernod Ricard',
+                'secteur': 'Consommation',
+                'sous_secteur': 'Spiritueux',
                 'pays': 'France',
-                'couleur': '#8B4513',
+                'couleur': '#8B0000',
                 'poids_cac40': 3.9,
-                'market_cap': 380e9,
-                'dividende_yield': 1.5,
-                'volume_moyen': 450000,
-                'description': 'Leader mondial du luxe'
+                'description': 'Leader mondial des vins et spiritueux'
+            },
+            'SU.PA': {
+                'nom_complet': 'Schneider Electric',
+                'secteur': 'Industrie',
+                'sous_secteur': 'Équipements électriques',
+                'pays': 'France',
+                'couleur': '#00A3E0',
+                'poids_cac40': 3.7,
+                'description': 'Spécialiste de la gestion d\'énergie'
+            },
+            'CAP.PA': {
+                'nom_complet': 'Capgemini',
+                'secteur': 'Technologie',
+                'sous_secteur': 'Services informatiques',
+                'pays': 'France',
+                'couleur': '#F26522',
+                'poids_cac40': 3.5,
+                'description': 'Services conseil en technologies'
+            },
+            'ACA.PA': {
+                'nom_complet': 'Crédit Agricole',
+                'secteur': 'Finance',
+                'sous_secteur': 'Banque',
+                'pays': 'France',
+                'couleur': '#004B87',
+                'poids_cac40': 3.3,
+                'description': 'Groupe bancaire coopératif'
+            },
+            'ML.PA': {
+                'nom_complet': 'Michelin',
+                'secteur': 'Industrie',
+                'sous_secteur': 'Pneumatiques',
+                'pays': 'France',
+                'couleur': '#FF0000',
+                'poids_cac40': 3.1,
+                'description': 'Manufacturier de pneumatiques'
+            },
+            'ENGI.PA': {
+                'nom_complet': 'Engie',
+                'secteur': 'Énergie',
+                'sous_secteur': 'Électricité & Gaz',
+                'pays': 'France',
+                'couleur': '#00A3E0',
+                'poids_cac40': 2.9,
+                'description': 'Fournisseur d\'énergie'
             }
-            # On pourrait ajouter les 30 autres entreprises...
         }
     
+    def get_yfinance_data(self, ticker, period="1y"):
+        """Récupère les données depuis Yahoo Finance"""
+        try:
+            stock = yf.Ticker(ticker)
+            hist = stock.history(period=period)
+            info = stock.info
+            
+            return hist, info
+        except Exception as e:
+            st.error(f"Erreur lors de la récupération des données pour {ticker}: {e}")
+            return None, None
+    
     def initialize_historical_data(self):
-        """Initialise les données historiques des prix"""
-        dates = pd.date_range('2020-01-01', datetime.now(), freq='D')
-        data = []
+        """Initialise les données historiques depuis Yahoo Finance"""
+        all_data = []
         
-        for date in dates:
-            for symbole, info in self.entreprises.items():
-                # Prix de base réaliste selon la capitalisation
-                base_price = info['market_cap'] / 1e9 * random.uniform(0.8, 1.2)
-                
-                # Impact COVID (2020)
-                if date.year == 2020 and date.month <= 6:
-                    covid_impact = random.uniform(0.5, 0.8)
-                elif date.year == 2020:
-                    covid_impact = random.uniform(0.8, 1.0)
-                elif date.year == 2021:
-                    covid_impact = random.uniform(1.0, 1.3)
-                else:
-                    covid_impact = random.uniform(1.0, 1.5)
-                
-                # Volatilité quotidienne
-                daily_volatility = random.uniform(0.95, 1.05)
-                
-                prix = base_price * covid_impact * daily_volatility * random.uniform(0.98, 1.02)
-                volume = info['volume_moyen'] * random.uniform(0.5, 2.0)
-                
-                data.append({
-                    'date': date,
-                    'symbole': symbole,
-                    'prix': prix,
-                    'volume': volume,
-                    'secteur': info['secteur'],
-                    'market_cap': info['market_cap'] * random.uniform(0.95, 1.05)
-                })
+        for ticker, info in self.entreprises.items():
+            hist, _ = self.get_yfinance_data(ticker, period="3y")
+            
+            if hist is not None and not hist.empty:
+                for date, row in hist.iterrows():
+                    all_data.append({
+                        'date': date,
+                        'symbole': ticker,
+                        'prix': row['Close'],
+                        'volume': row['Volume'],
+                        'secteur': info['secteur'],
+                        'ouverture': row['Open'],
+                        'plus_haut': row['High'],
+                        'plus_bas': row['Low']
+                    })
         
-        return pd.DataFrame(data)
+        return pd.DataFrame(all_data)
     
     def initialize_current_data(self):
-        """Initialise les données courantes"""
+        """Initialise les données courantes depuis Yahoo Finance"""
         current_data = []
-        for symbole, info in self.entreprises.items():
-            # Dernier prix historique
-            last_data = self.historical_data[self.historical_data['symbole'] == symbole].iloc[-1]
+        
+        for ticker, info in self.entreprises.items():
+            hist, yf_info = self.get_yfinance_data(ticker, period="1d")
             
-            # Variation quotidienne simulée
-            change_pct = random.uniform(-0.05, 0.05)
-            change_abs = last_data['prix'] * change_pct
-            
-            current_data.append({
-                'symbole': symbole,
-                'nom_complet': info['nom_complet'],
-                'secteur': info['secteur'],
-                'prix_actuel': last_data['prix'] + change_abs,
-                'variation_pct': change_pct * 100,
-                'variation_abs': change_abs,
-                'volume': info['volume_moyen'] * random.uniform(0.8, 1.2),
-                'market_cap': info['market_cap'],
-                'dividende_yield': info['dividende_yield'],
-                'poids_cac40': info['poids_cac40'],
-                'ouverture': last_data['prix'] * random.uniform(0.99, 1.01),
-                'plus_haut': last_data['prix'] * random.uniform(1.01, 1.03),
-                'plus_bas': last_data['prix'] * random.uniform(0.97, 0.99)
-            })
+            if hist is not None and not hist.empty:
+                latest = hist.iloc[-1]
+                
+                # Calcul de la variation
+                prix_actuel = latest['Close']
+                prix_ouverture = latest['Open']
+                variation_abs = prix_actuel - prix_ouverture
+                variation_pct = (variation_abs / prix_ouverture) * 100
+                
+                # Récupération des informations supplémentaires
+                market_cap = yf_info.get('marketCap', 0) if yf_info else 0
+                dividend_yield = yf_info.get('dividendYield', 0) * 100 if yf_info and yf_info.get('dividendYield') else 0
+                
+                current_data.append({
+                    'symbole': ticker,
+                    'nom_complet': info['nom_complet'],
+                    'secteur': info['secteur'],
+                    'prix_actuel': prix_actuel,
+                    'variation_pct': variation_pct,
+                    'variation_abs': variation_abs,
+                    'volume': latest['Volume'],
+                    'market_cap': market_cap,
+                    'dividende_yield': dividend_yield,
+                    'poids_cac40': info['poids_cac40'],
+                    'ouverture': prix_ouverture,
+                    'plus_haut': latest['High'],
+                    'plus_bas': latest['Low']
+                })
         
         return pd.DataFrame(current_data)
     
@@ -293,41 +315,32 @@ class CAC40Dashboard:
         
         for secteur in secteurs:
             entreprises_secteur = [s for s, info in self.entreprises.items() if info['secteur'] == secteur]
-            poids_total = sum([self.entreprises[s]['poids_cac40'] for s in entreprises_secteur])
-            market_cap_total = sum([self.entreprises[s]['market_cap'] for s in entreprises_secteur])
+            
+            # Calcul de la performance moyenne du secteur
+            entreprises_data = self.current_data[self.current_data['secteur'] == secteur]
+            performance_moyenne = entreprises_data['variation_pct'].mean() if not entreprises_data.empty else 0
             
             data.append({
                 'secteur': secteur,
-                'poids_cac40': poids_total,
-                'market_cap_total': market_cap_total,
+                'poids_cac40': sum([self.entreprises[s]['poids_cac40'] for s in entreprises_secteur]),
+                'market_cap_total': sum([self.current_data[self.current_data['symbole'] == s]['market_cap'].sum() for s in entreprises_secteur]),
                 'nombre_entreprises': len(entreprises_secteur),
-                'performance_moyenne': random.uniform(-2, 4)
+                'performance_moyenne': performance_moyenne
             })
         
         return pd.DataFrame(data)
     
     def update_live_data(self):
-        """Met à jour les données en temps réel"""
-        for idx in self.current_data.index:
-            symbole = self.current_data.loc[idx, 'symbole']
+        """Met à jour les données en temps réel depuis Yahoo Finance"""
+        try:
+            # Recréer les données courantes pour obtenir les dernières valeurs
+            self.current_data = self.initialize_current_data()
             
-            # Simulation de variations de prix
-            if random.random() < 0.3:  # 30% de chance de changement
-                variation = random.uniform(-0.02, 0.02)
-                nouveau_prix = self.current_data.loc[idx, 'prix_actuel'] * (1 + variation)
-                
-                self.current_data.loc[idx, 'prix_actuel'] = nouveau_prix
-                self.current_data.loc[idx, 'variation_pct'] = variation * 100
-                self.current_data.loc[idx, 'variation_abs'] = nouveau_prix - self.current_data.loc[idx, 'ouverture']
-                
-                # Mise à jour des plus hauts/plus bas
-                if nouveau_prix > self.current_data.loc[idx, 'plus_haut']:
-                    self.current_data.loc[idx, 'plus_haut'] = nouveau_prix
-                if nouveau_prix < self.current_data.loc[idx, 'plus_bas']:
-                    self.current_data.loc[idx, 'plus_bas'] = nouveau_prix
-                
-                # Mise à jour du volume
-                self.current_data.loc[idx, 'volume'] *= random.uniform(0.9, 1.1)
+            # Mettre à jour les données sectorielles
+            self.sector_data = self.initialize_sector_data()
+            
+        except Exception as e:
+            st.error(f"Erreur lors de la mise à jour des données: {e}")
     
     def display_header(self):
         """Affiche l'en-tête du dashboard"""
@@ -349,7 +362,7 @@ class CAC40Dashboard:
                    unsafe_allow_html=True)
         
         # Calcul des métriques
-        cac40_value = self.current_data['prix_actuel'].sum() / len(self.current_data) * 40
+        cac40_value = self.get_cac40_index_value()
         variation_cac40 = self.current_data['variation_pct'].mean()
         volume_total = self.current_data['volume'].sum()
         entreprises_hausse = len(self.current_data[self.current_data['variation_pct'] > 0])
@@ -386,6 +399,19 @@ class CAC40Dashboard:
                 f"{random.uniform(-0.1, 0.2):.2f} T€ vs hier"
             )
     
+    def get_cac40_index_value(self):
+        """Récupère la valeur actuelle du CAC 40 depuis Yahoo Finance"""
+        try:
+            cac40 = yf.Ticker("^FCHI")
+            hist = cac40.history(period="1d")
+            if not hist.empty:
+                return hist['Close'].iloc[-1]
+        except:
+            pass
+        
+        # Fallback: calcul basé sur les composantes
+        return self.current_data['prix_actuel'].sum() / len(self.current_data) * 40
+    
     def create_cac40_overview(self):
         """Crée la vue d'ensemble du CAC 40"""
         st.markdown('<h3 class="section-header">🏛️ VUE D\'ENSEMBLE DU CAC 40</h3>', 
@@ -397,17 +423,17 @@ class CAC40Dashboard:
             col1, col2 = st.columns(2)
             
             with col1:
-                # Évolution du CAC 40 simulé
-                cac40_evolution = self.historical_data.groupby('date')['prix'].mean().reset_index()
-                cac40_evolution['cac40'] = cac40_evolution['prix'] * 40
-                
-                fig = px.line(cac40_evolution, 
-                             x='date', 
-                             y='cac40',
-                             title='Évolution du CAC 40 (2020-2024)',
-                             color_discrete_sequence=['#0055A4'])
-                fig.update_layout(yaxis_title="Points CAC 40")
-                st.plotly_chart(fig, use_container_width=True)
+                # Évolution du CAC 40
+                cac40_hist = yf.Ticker("^FCHI").history(period="3y")
+                if not cac40_hist.empty:
+                    cac40_hist = cac40_hist.reset_index()
+                    fig = px.line(cac40_hist, 
+                                 x='Date', 
+                                 y='Close',
+                                 title='Évolution du CAC 40 (3 dernières années)',
+                                 color_discrete_sequence=['#0055A4'])
+                    fig.update_layout(yaxis_title="Points CAC 40")
+                    st.plotly_chart(fig, use_container_width=True)
             
             with col2:
                 # Performance par secteur
@@ -474,35 +500,37 @@ class CAC40Dashboard:
         with tab4:
             # Analyse technique d'une entreprise sélectionnée
             entreprise_selectionnee = st.selectbox("Sélectionnez une entreprise:", 
-                                                 list(self.entreprises.keys()))
+                                                 list(self.entreprises.keys()),
+                                                 format_func=lambda x: f"{x} - {self.entreprises[x]['nom_complet']}")
             
             if entreprise_selectionnee:
                 entreprise_data = self.historical_data[
                     self.historical_data['symbole'] == entreprise_selectionnee
                 ].copy()
                 
-                # Calcul des indicateurs techniques
-                entreprise_data['MA20'] = entreprise_data['prix'].rolling(window=20).mean()
-                entreprise_data['MA50'] = entreprise_data['prix'].rolling(window=50).mean()
-                
-                fig = make_subplots(rows=2, cols=1, shared_xaxes=True, 
-                                  vertical_spacing=0.1, 
-                                  subplot_titles=('Prix et Moyennes Mobiles', 'Volume'))
-                
-                # Prix et moyennes mobiles
-                fig.add_trace(go.Scatter(x=entreprise_data['date'], y=entreprise_data['prix'],
-                                       name='Prix', line=dict(color='#0055A4')), row=1, col=1)
-                fig.add_trace(go.Scatter(x=entreprise_data['date'], y=entreprise_data['MA20'],
-                                       name='MM20', line=dict(color='orange')), row=1, col=1)
-                fig.add_trace(go.Scatter(x=entreprise_data['date'], y=entreprise_data['MA50'],
-                                       name='MM50', line=dict(color='red')), row=1, col=1)
-                
-                # Volume
-                fig.add_trace(go.Bar(x=entreprise_data['date'], y=entreprise_data['volume'],
-                                   name='Volume', marker_color='lightblue'), row=2, col=1)
-                
-                fig.update_layout(height=600, title_text=f"Analyse Technique - {entreprise_selectionnee}")
-                st.plotly_chart(fig, use_container_width=True)
+                if not entreprise_data.empty:
+                    # Calcul des indicateurs techniques
+                    entreprise_data['MA20'] = entreprise_data['prix'].rolling(window=20).mean()
+                    entreprise_data['MA50'] = entreprise_data['prix'].rolling(window=50).mean()
+                    
+                    fig = make_subplots(rows=2, cols=1, shared_xaxes=True, 
+                                      vertical_spacing=0.1, 
+                                      subplot_titles=('Prix et Moyennes Mobiles', 'Volume'))
+                    
+                    # Prix et moyennes mobiles
+                    fig.add_trace(go.Scatter(x=entreprise_data['date'], y=entreprise_data['prix'],
+                                           name='Prix', line=dict(color='#0055A4')), row=1, col=1)
+                    fig.add_trace(go.Scatter(x=entreprise_data['date'], y=entreprise_data['MA20'],
+                                           name='MM20', line=dict(color='orange')), row=1, col=1)
+                    fig.add_trace(go.Scatter(x=entreprise_data['date'], y=entreprise_data['MA50'],
+                                           name='MM50', line=dict(color='red')), row=1, col=1)
+                    
+                    # Volume
+                    fig.add_trace(go.Bar(x=entreprise_data['date'], y=entreprise_data['volume'],
+                                       name='Volume', marker_color='lightblue'), row=2, col=1)
+                    
+                    fig.update_layout(height=600, title_text=f"Analyse Technique - {entreprise_selectionnee}")
+                    st.plotly_chart(fig, use_container_width=True)
     
     def create_entreprises_live(self):
         """Affiche les entreprises en temps réel"""
@@ -564,7 +592,7 @@ class CAC40Dashboard:
                     st.markdown(f"Market Cap: {entreprise['market_cap']/1e9:.1f} Md€")
                 with col3:
                     st.markdown(f"**{entreprise['prix_actuel']:.2f}€**")
-                    st.markdown(f"Div. Yield: {entreprise['dividende_yield']}%")
+                    st.markdown(f"Div. Yield: {entreprise['dividende_yield']:.2f}%")
                 with col4:
                     variation_str = f"{entreprise['variation_pct']:+.2f}%"
                     st.markdown(f"**{variation_str}**")
@@ -579,7 +607,8 @@ class CAC40Dashboard:
         with tab2:
             # Analyse détaillée par secteur
             secteur_selectionne = st.selectbox("Sélectionnez un secteur:", 
-                                             self.sector_data['secteur'].unique())
+                                             self.sector_data['secteur'].unique(),
+                                             key="sector_analysis")
             
             if secteur_selectionne:
                 entreprises_secteur = self.current_data[
@@ -622,7 +651,8 @@ class CAC40Dashboard:
                 max_volatilite = st.number_input("Volatilité Max (%)", 
                                                min_value=0, max_value=100, value=50)
                 secteur_screener = st.multiselect("Secteurs", 
-                                                 self.sector_data['secteur'].unique())
+                                                 self.sector_data['secteur'].unique(),
+                                                 key="sector_screener")
             
             with col3:
                 min_performance = st.number_input("Performance Min (%)", 
@@ -650,7 +680,7 @@ class CAC40Dashboard:
                 st.dataframe(entreprises_filtrees[['symbole', 'nom_complet', 'secteur', 'prix_actuel', 
                                                  'variation_pct', 'dividende_yield', 'market_cap']], 
                            use_container_width=True)
-    
+
     def create_sector_analysis(self):
         """Analyse sectorielle détaillée"""
         st.markdown('<h3 class="section-header">📊 ANALYSE SECTORIELLE DÉTAILLÉE</h3>', 
@@ -700,7 +730,7 @@ class CAC40Dashboard:
                          x='date', 
                          y='prix',
                          color='secteur',
-                         title='Évolution Comparative des Secteurs (2020-2024)',
+                         title='Évolution Comparative des Secteurs',
                          color_discrete_sequence=px.colors.qualitative.Set3)
             st.plotly_chart(fig, use_container_width=True)
         
@@ -749,7 +779,7 @@ class CAC40Dashboard:
                 - Pressions sur les marges
                 - Changement des habitudes de consommation
                 """)
-    
+
     def create_evolution_analysis(self):
         """Analyse de l'évolution des marchés"""
         st.markdown('<h3 class="section-header">📈 ÉVOLUTION DES MARCHÉS</h3>', 
@@ -761,67 +791,111 @@ class CAC40Dashboard:
             col1, col2 = st.columns(2)
             
             with col1:
-                # Performance cumulative
-                cumulative_data = self.historical_data.copy()
-                cumulative_data['date_group'] = cumulative_data['date'].dt.to_period('M').dt.to_timestamp()
-                monthly_perf = cumulative_data.groupby(['date_group', 'symbole'])['prix'].last().reset_index()
-                monthly_perf['prev_price'] = monthly_perf.groupby('symbole')['prix'].shift(1)
-                monthly_perf['monthly_return'] = (monthly_perf['prix'] / monthly_perf['prev_price'] - 1) * 100
-                
-                cumulative_returns = monthly_perf.groupby('date_group')['monthly_return'].mean().cumsum().reset_index()
-                
-                fig = px.line(cumulative_returns, 
-                             x='date_group', 
-                             y='monthly_return',
-                             title='Performance Cumulative du CAC 40 (%)')
-                st.plotly_chart(fig, use_container_width=True)
+                # Performance cumulative du CAC 40
+                cac40 = yf.Ticker("^FCHI")
+                cac40_hist = cac40.history(period="3y")
+                if not cac40_hist.empty:
+                    cac40_hist = cac40_hist.reset_index()
+                    cac40_hist['Return'] = cac40_hist['Close'].pct_change().cumsum() * 100
+                    
+                    fig = px.line(cac40_hist, 
+                                 x='Date', 
+                                 y='Return',
+                                 title='Performance Cumulative du CAC 40 (%)')
+                    st.plotly_chart(fig, use_container_width=True)
             
             with col2:
-                # Rendements mensuels
-                monthly_heatmap = monthly_perf.pivot_table(
-                    index=monthly_perf['date_group'].dt.year,
-                    columns=monthly_perf['date_group'].dt.month,
-                    values='monthly_return',
-                    aggfunc='mean'
-                )
-                
-                fig = px.imshow(monthly_heatmap,
-                               title='Rendements Mensuels Moyens par Année (%)',
-                               color_continuous_scale='RdYlGn',
-                               aspect="auto")
-                st.plotly_chart(fig, use_container_width=True)
+                # Heatmap des rendements
+                try:
+                    # Récupérer les données mensuelles pour plusieurs entreprises
+                    symbols_sample = list(self.entreprises.keys())[:10]  # Limiter pour performance
+                    monthly_returns = []
+                    
+                    for symbol in symbols_sample:
+                        stock = yf.Ticker(symbol)
+                        hist = stock.history(period="2y", interval="1mo")
+                        if not hist.empty:
+                            hist['Monthly_Return'] = hist['Close'].pct_change() * 100
+                            hist['Symbol'] = symbol
+                            hist['Year'] = hist.index.year
+                            hist['Month'] = hist.index.month
+                            monthly_returns.append(hist[['Symbol', 'Year', 'Month', 'Monthly_Return']].dropna())
+                    
+                    if monthly_returns:
+                        returns_df = pd.concat(monthly_returns)
+                        heatmap_data = returns_df.pivot_table(
+                            index='Year',
+                            columns='Month',
+                            values='Monthly_Return',
+                            aggfunc='mean'
+                        )
+                        
+                        fig = px.imshow(heatmap_data,
+                                       title='Rendements Mensuels Moyens par Année (%)',
+                                       color_continuous_scale='RdYlGn',
+                                       aspect="auto")
+                        st.plotly_chart(fig, use_container_width=True)
+                except Exception as e:
+                    st.info("Données de heatmap temporairement indisponibles")
         
         with tab2:
             # Analyse de volatilité
-            volatilite_data = self.historical_data.groupby('symbole').agg({
-                'prix': ['last', 'std'],
-                'volume': 'mean'
-            }).round(2)
-            volatilite_data.columns = ['prix_actuel', 'volatilite', 'volume_moyen']
-            volatilite_data['volatilite_pct'] = (volatilite_data['volatilite'] / volatilite_data['prix_actuel']) * 100
+            volatilite_data = []
+            for ticker, info in self.entreprises.items():
+                try:
+                    stock = yf.Ticker(ticker)
+                    hist = stock.history(period="6mo")
+                    if not hist.empty:
+                        volatilite = hist['Close'].std()
+                        prix_actuel = hist['Close'].iloc[-1]
+                        volume_moyen = hist['Volume'].mean()
+                        
+                        volatilite_data.append({
+                            'symbole': ticker,
+                            'prix_actuel': prix_actuel,
+                            'volatilite': volatilite,
+                            'volatilite_pct': (volatilite / prix_actuel) * 100,
+                            'volume_moyen': volume_moyen
+                        })
+                except:
+                    continue
             
-            fig = px.scatter(volatilite_data, 
-                           x='volume_moyen', 
-                           y='volatilite_pct',
-                           size='prix_actuel',
-                           color=volatilite_data.index,
-                           title='Volatilité vs Volume des Entreprises',
-                           hover_name=volatilite_data.index,
-                           size_max=40)
-            st.plotly_chart(fig, use_container_width=True)
+            if volatilite_data:
+                volatilite_df = pd.DataFrame(volatilite_data)
+                fig = px.scatter(volatilite_df, 
+                               x='volume_moyen', 
+                               y='volatilite_pct',
+                               size='prix_actuel',
+                               color='volatilite_pct',
+                               title='Volatilité vs Volume des Entreprises',
+                               hover_name='symbole',
+                               size_max=40)
+                st.plotly_chart(fig, use_container_width=True)
         
         with tab3:
             # Matrice de corrélation
-            corr_data = self.historical_data.pivot(index='date', columns='symbole', values='prix')
-            correlation_matrix = corr_data.corr()
-            
-            fig = px.imshow(correlation_matrix,
-                           title='Matrice de Corrélation entre les Entreprises',
-                           color_continuous_scale='RdBu',
-                           zmin=-1, zmax=1,
-                           aspect="auto")
-            st.plotly_chart(fig, use_container_width=True)
-    
+            try:
+                # Récupérer les données de clôture pour les 3 derniers mois
+                corr_data = []
+                for ticker in list(self.entreprises.keys())[:15]:  # Limiter pour performance
+                    stock = yf.Ticker(ticker)
+                    hist = stock.history(period="3mo")
+                    if not hist.empty:
+                        corr_data.append(hist['Close'].rename(ticker))
+                
+                if corr_data:
+                    corr_df = pd.concat(corr_data, axis=1)
+                    correlation_matrix = corr_df.corr()
+                    
+                    fig = px.imshow(correlation_matrix,
+                                   title='Matrice de Corrélation entre les Entreprises',
+                                   color_continuous_scale='RdBu',
+                                   zmin=-1, zmax=1,
+                                   aspect="auto")
+                    st.plotly_chart(fig, use_container_width=True)
+            except Exception as e:
+                st.info("Matrice de corrélation temporairement indisponible")
+
     def create_sidebar(self):
         """Crée la sidebar avec les contrôles"""
         st.sidebar.markdown("## 🎛️ CONTRÔLES D'ANALYSE")
@@ -855,20 +929,30 @@ class CAC40Dashboard:
         st.sidebar.markdown("---")
         st.sidebar.markdown("### 💹 INFOS MARCHÉ")
         
-        # Indices mondiaux simulés
+        # Indices mondiaux via yfinance
         indices = {
-            'S&P 500': {'valeur': 4500 + random.randint(-100, 100), 'variation': random.uniform(-1, 1)},
-            'NASDAQ': {'valeur': 14000 + random.randint(-200, 200), 'variation': random.uniform(-1, 1)},
-            'DAX': {'valeur': 16000 + random.randint(-100, 100), 'variation': random.uniform(-1, 1)},
-            'FTSE 100': {'valeur': 7500 + random.randint(-50, 50), 'variation': random.uniform(-1, 1)}
+            'S&P 500': '^GSPC',
+            'NASDAQ': '^IXIC',
+            'DAX': '^GDAXI',
+            'FTSE 100': '^FTSE'
         }
         
-        for indice, data in indices.items():
-            st.sidebar.metric(
-                indice,
-                f"{data['valeur']:,}",
-                f"{data['variation']:+.2f}%"
-            )
+        for indice_name, indice_ticker in indices.items():
+            try:
+                indice_data = yf.Ticker(indice_ticker)
+                hist = indice_data.history(period='1d')
+                if not hist.empty:
+                    valeur = hist['Close'].iloc[-1]
+                    ouverture = hist['Open'].iloc[-1]
+                    variation = ((valeur - ouverture) / ouverture) * 100
+                    
+                    st.sidebar.metric(
+                        indice_name,
+                        f"{valeur:,.0f}",
+                        f"{variation:+.2f}%"
+                    )
+            except:
+                st.sidebar.write(f"{indice_name}: Données indisponibles")
         
         return {
             'date_debut': date_debut,
@@ -976,37 +1060,34 @@ class CAC40Dashboard:
             et de ses entreprises composantes.
             
             **Couverture:**
-            - 40 entreprises du CAC 40 avec données détaillées
+            - Entreprises du CAC 40 avec données détaillées
             - Analyse sectorielle et technique
-            - Données historiques depuis 2020
+            - Données historiques
             - Indicateurs de performance en temps réel
             
             **Sources des données:**
-            - Euronext Paris
-            - Bloomberg
-            - Reuters
+            - Yahoo Finance (yfinance)
             - Données fondamentales des entreprises
             
             **⚠️ Avertissement:** 
-            Les données présentées sont simulées pour la démonstration.
+            Ce dashboard est à but éducatif et informatif.
+            Les données peuvent avoir un délai de 15-20 minutes.
             Ce dashboard n'est pas un conseil en investissement.
             Les performances passées ne préjugent pas des performances futures.
-            
-            **🔒 Confidentialité:** 
-            Toutes les données sont anonymisées et agrégées.
             """)
             
             st.markdown("---")
             st.markdown("""
-            **📞 Contact:**
-            - Site web: www.euronext.com
-            - Email: info@euronext.com
-            - Siège: Paris, France
+            **Technologies utilisées:**
+            - Streamlit
+            - Yahoo Finance API
+            - Plotly
+            - Pandas
             """)
         
         # Rafraîchissement automatique
         if controls['auto_refresh']:
-            time.sleep(30)  # Rafraîchissement toutes les 30 secondes
+            time.sleep(60)  # Rafraîchissement toutes les 60 secondes
             st.rerun()
 
 # Lancement du dashboard
